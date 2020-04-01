@@ -27,6 +27,9 @@ void floor_stack_push(floor_stack_Stack *stack,
 void floor_stack_peak(floor_stack_Stack *stack,
                       void **out_content);
 
+void floor_stack_peak_floor(floor_stack_Stack *stack,
+                            void **out_content);
+
 void floor_stack_pop_maybe(floor_stack_Stack *stack);
 
 
@@ -56,6 +59,12 @@ void floor_stack_peak(floor_stack_Stack *stack,
 {
     *out_content = offset(stack, sizeof(floor_stack_Stack)
         + *depth_track_lo_16(&stack->depth_track) * stack->content_sizeof);
+}
+
+void floor_stack_peak_floor(floor_stack_Stack *stack,
+                            void **out_content)
+{
+    *out_content = offset(stack, sizeof(floor_stack_Stack));
 }
 
 void floor_stack_pop_maybe(floor_stack_Stack *stack)
