@@ -22,9 +22,6 @@ void map_get(map_Map *map,
              uint32_t key,
              void **out_value);
 
-bool map_has(map_Map *map,
-             uint32_t key);
-
 void map_add(map_Map *map,
              uint32_t key,
              void **out_value);
@@ -51,24 +48,12 @@ void map_get(map_Map *map,
 {
     map_NodeHead *node = map->tail_nodes[map_hash(key)];
 
-    while(node->key != key) {
+    while(node && node->key != key)
         node = node->last;
-    }
-    *out_value = offset(node, sizeof(map_NodeHead));
-}
 
-bool map_has(map_Map *map,
-             uint32_t key)
-{
-    map_NodeHead *node = map->tail_nodes[map_hash(key)];
-
-    while (node) {
-        if (node->key == key)
-            return true;
-
-        node = node->last;
-    }
-    return false;
+    *out_value = NULL;
+    if (node)
+        *out_value = offset(node, sizeof(map_NodeHead));
 }
 
 void map_add(map_Map *map,
