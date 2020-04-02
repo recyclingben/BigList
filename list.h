@@ -13,51 +13,51 @@ typedef struct {
 typedef struct {
     int content_sizeof;
     floor_stack_Stack *add_stack;
-} list_List;
+} list_ListHead;
 
 void list_make(int content_sizeof,
                int capacity,
-               list_List **out_list);
+               list_ListHead **out_list);
 
-void list_head(list_List *list,
+void list_head(list_ListHead *list,
                void **out_content);
 
-void list_next(list_List *list,
+void list_next(list_ListHead *list,
                void *content,
                void **out_content);
 
-void list_add(list_List *list,
+void list_add(list_ListHead *list,
               void **out_content);
 
-void list_remove(list_List *list,
+void list_remove(list_ListHead *list,
                  void *content);
 
 void list_make(int content_sizeof,
                int capacity,
-               list_List **out_list)
+               list_ListHead **out_list)
 {
-    *out_list = calloc(1, sizeof(list_List)
+    *out_list = calloc(1, sizeof(list_ListHead)
         + capacity * (sizeof(list_EntryHead) + content_sizeof));
     (*out_list)->content_sizeof = content_sizeof;
 
     list_EntryHead **head;
     floor_stack_make(sizeof(list_EntryHead *),
                      &(*out_list)->add_stack, (void **)&head);
-    *head = offset(*out_list, sizeof(list_List));
+    *head = offset(*out_list, sizeof(list_ListHead));
     (*head)->live        = true;
     (*head)->pre_content = NULL;
 }
 
-void list_head(list_List *list,
+void list_head(list_ListHead *list,
                void **out_content)
 {
-    list_EntryHead *entry = offset(list, sizeof(list_List));
+    list_EntryHead *entry = offset(list, sizeof(list_ListHead));
     while (!entry->live)
         entry = offset(entry, sizeof(list_EntryHead) + list->content_sizeof);
     *out_content = entry->pre_content;
 }
 
-void list_next(list_List *list,
+void list_next(list_ListHead *list,
                void *content,
                void **out_content)
 {
@@ -67,7 +67,7 @@ void list_next(list_List *list,
     *out_content = entry->pre_content;
 }
 
-void list_add(list_List *list,
+void list_add(list_ListHead *list,
               void **out_content)
 {
     list_EntryHead **entry;
@@ -89,7 +89,7 @@ void list_add(list_List *list,
     (*entry)->pre_content = NULL;
 }
 
-void list_remove(list_List *list,
+void list_remove(list_ListHead *list,
                  void *content)
 {
     list_EntryHead **entry;
