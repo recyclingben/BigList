@@ -12,9 +12,14 @@
 #define depth_track_lo_16(ptr) ((uint16_t *)offset(ptr, 2))
 #endif
 
+typedef union {
+    uint32_t int_32;
+    uint16_t int_16;
+} uint_32_16;
+
 typedef struct {
     int content_sizeof;
-    uint32_t depth_track;
+    uint_32_16 depth_track;
 } floor_stack_Stack;
 
 void floor_stack_make(int content_sizeof,
@@ -41,6 +46,7 @@ void floor_stack_make(int content_sizeof,
         + (uint16_t)~0 * content_sizeof);
     (*out_stack)->content_sizeof = content_sizeof;
 
+
     *depth_track_hi_16(&(*out_stack)->depth_track) = 1;
     *depth_track_lo_16(&(*out_stack)->depth_track) = 0;
 
@@ -50,7 +56,7 @@ void floor_stack_make(int content_sizeof,
 void floor_stack_push(floor_stack_Stack *stack,
                       void **out_content)
 {
-    ++stack->depth_track;
+    ++stack->depth_track.int_32;
     floor_stack_peak(stack, out_content);
 }
 
@@ -71,7 +77,7 @@ void floor_stack_pop_maybe(floor_stack_Stack *stack)
 {
     /* Trick to decrement 16 bit integer, unless it would underflow. */
     /* Relies on higher 16 bits being == 1. */
-    --stack->depth_track;
+    --stack->depth_track.int_32;
     *depth_track_lo_16(&stack->depth_track) -= *depth_track_hi_16(&stack->depth_track);
     *depth_track_lo_16(&stack->depth_track) += 1;
     *depth_track_hi_16(&stack->depth_track) = 1;
