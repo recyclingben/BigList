@@ -1,5 +1,7 @@
 #pragma once
 #include <stdint.h>
+#include <stdlib.h>
+#define offset(of, by) ((void *)((char *)(of) + (int)(by)))
 
 typedef struct map_NodeHead map_NodeHead;
 
