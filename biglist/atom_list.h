@@ -57,7 +57,8 @@ static inline void atom_list_head(atom_list_List *list,
                                   void **out_content)
 {
     fluid_list_head(list->list, out_content);
-    *out_content = offset(*out_content, sizeof(atom_list_EntryHead));
+    if (*out_content)
+        *out_content = offset(*out_content, sizeof(atom_list_EntryHead));
 }
 
 static inline void atom_list_next(atom_list_List *list,
@@ -66,7 +67,8 @@ static inline void atom_list_next(atom_list_List *list,
 {
     void *entry = offset(content, -sizeof(atom_list_EntryHead));
     fluid_list_next(list->list, entry, out_content);
-    *out_content = offset(*out_content, sizeof(atom_list_EntryHead));
+    if (*out_content)
+        *out_content = offset(*out_content, sizeof(atom_list_EntryHead));
 }
 
 static inline void atom_list_add(atom_list_List *list,
