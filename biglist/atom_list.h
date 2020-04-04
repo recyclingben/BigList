@@ -1,5 +1,5 @@
 #pragma once
-#include "list.h"
+#include "fluid_list.h"
 #define offset(of, by) ((void *)((char *)(of) + (int)(by)))
 
 typedef struct {
@@ -9,7 +9,7 @@ typedef struct {
 
 typedef struct {
     uint32_t next_check_key;
-    list_ListHead *list;
+    fluid_list_ListHead *list;
 } atom_list_List;
 
 typedef struct {
@@ -48,15 +48,15 @@ static inline void atom_list_make(int content_sizeof,
 {
     *out_list = malloc(sizeof(atom_list_List));
 
-    list_make(sizeof(atom_list_EntryHead) + content_sizeof,
-              capacity,
-              &(*out_list)->list);
+    fluid_list_make(sizeof(atom_list_EntryHead) + content_sizeof,
+                    capacity,
+                    &(*out_list)->list);
 }
 
 static inline void atom_list_head(atom_list_List *list,
                                   void **out_content)
 {
-    list_head(list->list, out_content);
+    fluid_list_head(list->list, out_content);
     *out_content = offset(*out_content, sizeof(atom_list_EntryHead));
 }
 
@@ -65,7 +65,7 @@ static inline void atom_list_next(atom_list_List *list,
                                   void **out_content)
 {
     void *entry = offset(content, -sizeof(atom_list_EntryHead));
-    list_next(list->list, entry, out_content);
+    fluid_list_next(list->list, entry, out_content);
     *out_content = offset(*out_content, sizeof(atom_list_EntryHead));
 }
 
@@ -73,7 +73,7 @@ static inline void atom_list_add(atom_list_List *list,
                                  void **out_content)
 {
     atom_list_EntryHead *entry;
-    list_add(list->list, (void **)&entry);
+    fluid_list_add(list->list, (void **)&entry);
     entry->check_key = list->next_check_key++;
     entry->live      = true;
 
@@ -85,7 +85,7 @@ static inline void atom_list_remove(atom_list_List *list,
 {
     atom_list_EntryHead *entry = offset(content, -sizeof(atom_list_EntryHead));
     entry->live = false;
-    list_remove(list->list, entry);
+    fluid_list_remove(list->list, entry);
 }
 
 static inline void atom_list_get_atom(atom_list_List *list,
