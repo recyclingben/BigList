@@ -17,41 +17,41 @@ typedef struct {
     map2d_NodeHead *tail_nodes[(uint16_t)~0];
 } map2d_Map;
 
-void map2d_make(int content_sizeof,
-              map2d_Map **out_map);
+static inline void map2d_make(int content_sizeof,
+                              map2d_Map **out_map);
 
-void map2d_get(map2d_Map *map,
-             uint32_t key_x,
-             uint32_t key_y,
-             void **out_value);
+static inline void map2d_get(map2d_Map *map,
+                             uint32_t key_x,
+                             uint32_t key_y,
+                             void **out_value);
 
-void map2d_add(map2d_Map *map,
-               uint32_t key_x,
-               uint32_t key_y,
-               void **out_value);
+static inline void map2d_add(map2d_Map *map,
+                             uint32_t key_x,
+                             uint32_t key_y,
+                             void **out_value);
 
-void map2d_remove(map2d_Map *map,
-                  uint32_t key_x,
-                  uint32_t key_y);
+static inline void map2d_remove(map2d_Map *map,
+                                uint32_t key_x,
+                                uint32_t key_y);
 
-void map2d_remove_value(map2d_Map *map,
-                      void *value);
+static inline void map2d_remove_value(map2d_Map *map,
+                                      void *value);
 
-uint16_t map2d_hash(uint32_t key_x,
-                    uint32_t key_y);
+static inline uint16_t map2d_hash(uint32_t key_x,
+                                  uint32_t key_y);
 
 
-void map2d_make(int content_sizeof,
-              map2d_Map **out_map)
+static inline void map2d_make(int content_sizeof,
+                              map2d_Map **out_map)
 {
     *out_map = calloc(1, sizeof(map2d_Map));
     (*out_map)->content_sizeof = content_sizeof;
 }
 
-void map2d_get(map2d_Map *map,
-             uint32_t key_x,
-             uint32_t key_y,
-             void **out_value)
+static inline void map2d_get(map2d_Map *map,
+                             uint32_t key_x,
+                             uint32_t key_y,
+                             void **out_value)
 {
     map2d_NodeHead *node = map->tail_nodes[map2d_hash(key_x, key_y)];
 
@@ -63,10 +63,10 @@ void map2d_get(map2d_Map *map,
         *out_value = offset(node, sizeof(map2d_NodeHead));
 }
 
-void map2d_add(map2d_Map *map,
-             uint32_t key_x,
-             uint32_t key_y,
-             void **out_value)
+static inline void map2d_add(map2d_Map *map,
+                             uint32_t key_x,
+                             uint32_t key_y,
+                             void **out_value)
 {
     int hash = map2d_hash(key_x, key_y);
     map2d_NodeHead *tail = map->tail_nodes[hash];
@@ -82,9 +82,9 @@ void map2d_add(map2d_Map *map,
     *out_value = offset(map->tail_nodes[hash], sizeof(map2d_NodeHead));
 }
 
-void map2d_remove(map2d_Map *map,
-                  uint32_t key_x,
-                  uint32_t key_y)
+static inline void map2d_remove(map2d_Map *map,
+                                uint32_t key_x,
+                                uint32_t key_y)
 {
     map2d_NodeHead *node = map->tail_nodes[map2d_hash(key_x, key_y)];
 
@@ -103,8 +103,8 @@ void map2d_remove(map2d_Map *map,
     }
 }
 
-void map2d_remove_value(map2d_Map *map,
-                      void *value)
+static inline void map2d_remove_value(map2d_Map *map,
+                                      void *value)
 {
     map2d_NodeHead *node = offset(value, -sizeof(map2d_NodeHead));
 
@@ -115,8 +115,8 @@ void map2d_remove_value(map2d_Map *map,
     free(node);
 }
 
-uint16_t map2d_hash(uint32_t key_x,
-                    uint32_t key_y)
+static inline uint16_t map2d_hash(uint32_t key_x,
+                                  uint32_t key_y)
 {
     return (key_x * 2654435761 >> 16) ^ (key_y * 2654435761 >> 16);
 }

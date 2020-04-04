@@ -15,26 +15,26 @@ typedef struct {
     floor_stack_Stack *add_stack;
 } list_ListHead;
 
-void list_make(int content_sizeof,
-               int capacity,
-               list_ListHead **out_list);
+static inline void list_make(int content_sizeof,
+                             int capacity,
+                             list_ListHead **out_list);
 
-void list_head(list_ListHead *list,
-               void **out_content);
+static inline void list_head(list_ListHead *list,
+                             void **out_content);
 
-void list_next(list_ListHead *list,
-               void *content,
-               void **out_content);
+static inline void list_next(list_ListHead *list,
+                             void *content,
+                             void **out_content);
 
-void list_add(list_ListHead *list,
-              void **out_content);
+static inline void list_add(list_ListHead *list,
+                            void **out_content);
 
-void list_remove(list_ListHead *list,
-                 void *content);
+static inline void list_remove(list_ListHead *list,
+                               void *content);
 
-void list_make(int content_sizeof,
-               int capacity,
-               list_ListHead **out_list)
+static inline void list_make(int content_sizeof,
+                             int capacity,
+                             list_ListHead **out_list)
 {
     *out_list = calloc(1, sizeof(list_ListHead)
         + capacity * (sizeof(list_EntryHead) + content_sizeof));
@@ -48,8 +48,8 @@ void list_make(int content_sizeof,
     (*head)->pre_content = NULL;
 }
 
-void list_head(list_ListHead *list,
-               void **out_content)
+static inline void list_head(list_ListHead *list,
+                             void **out_content)
 {
     list_EntryHead *entry = offset(list, sizeof(list_ListHead));
     while (!entry->live)
@@ -57,9 +57,9 @@ void list_head(list_ListHead *list,
     *out_content = entry->pre_content;
 }
 
-void list_next(list_ListHead *list,
-               void *content,
-               void **out_content)
+static inline void list_next(list_ListHead *list,
+                             void *content,
+                             void **out_content)
 {
     list_EntryHead *entry = offset(content, list->content_sizeof);
     while (!entry->live)
@@ -67,8 +67,8 @@ void list_next(list_ListHead *list,
     *out_content = entry->pre_content;
 }
 
-void list_add(list_ListHead *list,
-              void **out_content)
+static inline void list_add(list_ListHead *list,
+                            void **out_content)
 {
     list_EntryHead **entry;
     floor_stack_peak(list->add_stack, (void **)&entry);
@@ -89,8 +89,8 @@ void list_add(list_ListHead *list,
     (*entry)->pre_content = NULL;
 }
 
-void list_remove(list_ListHead *list,
-                 void *content)
+static inline void list_remove(list_ListHead *list,
+                               void *content)
 {
     list_EntryHead **entry;
 

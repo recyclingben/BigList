@@ -22,25 +22,25 @@ typedef struct {
     uint_32_16 depth_track;
 } floor_stack_Stack;
 
-void floor_stack_make(int content_sizeof,
-                      floor_stack_Stack **out_stack,
-                      void **out_floor);
+static inline void floor_stack_make(int content_sizeof,
+                                    floor_stack_Stack **out_stack,
+                                    void **out_floor);
 
-void floor_stack_push(floor_stack_Stack *stack,
-                      void **out_content);
+static inline void floor_stack_push(floor_stack_Stack *stack,
+                                    void **out_content);
 
-void floor_stack_peak(floor_stack_Stack *stack,
-                      void **out_content);
+static inline void floor_stack_peak(floor_stack_Stack *stack,
+                                    void **out_content);
 
-void floor_stack_peak_floor(floor_stack_Stack *stack,
-                            void **out_content);
+static inline void floor_stack_peak_floor(floor_stack_Stack *stack,
+                                          void **out_content);
 
-void floor_stack_pop_maybe(floor_stack_Stack *stack);
+static inline void floor_stack_pop_maybe(floor_stack_Stack *stack);
 
 
-void floor_stack_make(int content_sizeof,
-                      floor_stack_Stack **out_stack,
-                      void **out_floor)
+static inline void floor_stack_make(int content_sizeof,
+                                    floor_stack_Stack **out_stack,
+                                    void **out_floor)
 {
     *out_stack = calloc(1, sizeof(floor_stack_Stack)
         + (uint16_t)~0 * content_sizeof);
@@ -53,27 +53,27 @@ void floor_stack_make(int content_sizeof,
     floor_stack_peak(*out_stack, out_floor);
 }
 
-void floor_stack_push(floor_stack_Stack *stack,
-                      void **out_content)
+static inline void floor_stack_push(floor_stack_Stack *stack,
+                                    void **out_content)
 {
     ++stack->depth_track.int_32;
     floor_stack_peak(stack, out_content);
 }
 
-void floor_stack_peak(floor_stack_Stack *stack,
-                      void **out_content)
+static inline void floor_stack_peak(floor_stack_Stack *stack,
+                                    void **out_content)
 {
     *out_content = offset(stack, sizeof(floor_stack_Stack)
         + *depth_track_lo_16(&stack->depth_track) * stack->content_sizeof);
 }
 
-void floor_stack_peak_floor(floor_stack_Stack *stack,
-                            void **out_content)
+static inline void floor_stack_peak_floor(floor_stack_Stack *stack,
+                                          void **out_content)
 {
     *out_content = offset(stack, sizeof(floor_stack_Stack));
 }
 
-void floor_stack_pop_maybe(floor_stack_Stack *stack)
+static inline void floor_stack_pop_maybe(floor_stack_Stack *stack)
 {
     /* Trick to decrement 16 bit integer, unless it would underflow. */
     /* Relies on higher 16 bits being == 1. */
