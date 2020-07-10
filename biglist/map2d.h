@@ -90,10 +90,8 @@ static inline void map2d_remove(map2d_Map *map,
 
     while (node) {
         if (node->key_x == key_x && node->key_y == key_y) {
-            if (node->last)
-                node->last->next = node->next;
-            if (node->next)
-                node->next->last = node->last;
+            if (node->last) node->last->next = node->next;
+            if (node->next) node->next->last = node->last;
             free(node);
 
             return;
@@ -108,10 +106,8 @@ static inline void map2d_remove_value(map2d_Map *map,
 {
     map2d_NodeHead *node = offset(value, -sizeof(map2d_NodeHead));
 
-    if (node->last)
-        node->last->next = node->next;
-    if (node->next)
-        node->next->last = node->last;
+    if (node->last) node->last->next = node->next;
+    if (node->next) node->next->last = node->last;
     free(node);
 }
 
