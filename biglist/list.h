@@ -19,7 +19,7 @@ typedef map2d_Map           index_Index2D;
 #define index_remove(index, key)                                   map_remove(index, key)
 #define index_remove_value(index, value)                           map_remove_value(index, value)
 #define index_slow_iter_head(index, out_content, out_key)          map_slow_iter_head(index, (void **)out_content, out_key)
-#define index_slow_iter_head(index, content, out_content, out_key) map_slow_iter_next(index, content, (void **)out_content, out_key)
+#define index_slow_iter_next(index, content, out_content, out_key) map_slow_iter_next(index, content, (void **)out_content, out_key)
 
 #define index2d_make(content_size, out_index)                                     map2d_make(content_size, out_index)
 #define index2d_get(index, key_x, key_y, out_content)                             map2d_get(index, key_x, key_y, (void **)(out_content))
