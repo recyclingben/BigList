@@ -33,6 +33,15 @@ static inline void map_remove(map_Map *map,
 static inline void map_remove_value(map_Map *map,
                                     void *value);
 
+static inline void map_slow_iter_head(map_Map *map,
+                                      void **out_value,
+                                      uint32_t *out_key);
+
+static inline void map_slow_iter_next(map_Map *map,
+                                      void *value,
+                                      void **out_value,
+                                      uint32_t *out_key);
+
 static inline uint16_t map_hash(uint32_t key);
 
 
@@ -104,6 +113,39 @@ static inline void map_remove_value(map_Map *map,
     if (node->next)
         node->next->last = node->last;
     free(node);
+}
+
+static inline void map_slow_iter_head(map_Map *map,
+                                      void **out_value,
+                                      uint32_t *out_key)
+{
+    *out_value = NULL;
+    for (int i = 0; i < (uint16_t)~0 + 1 && !*out_value; ++i)
+        *out_value = map->tail_nodes[i];
+
+    if (*out_value) {
+        *out_key   = ((map_NodeHead *)*out_value)->key;
+        *out_value = offset(*out_value, sizeof(map_NodeHead));
+    }
+}
+
+static inline void map_slow_iter_next(map_Map *map,
+                                      void *value,
+                                      void **out_value,
+                                      uint32_t *out_key)
+{
+    map_NodeHead *node = offset(value, -sizeof(map_NodeHead));
+    uint16_t hash = map_hash(node->key);
+
+    *out_value = node->last;
+    if (!*out_value)
+        for (int i = hash + 1; i < (uint16_t)~0 + 1 && !*out_value; ++i)
+    *out_value = map->tail_nodes[i];
+
+    if (*out_value) {
+        *out_key   = ((map_NodeHead *)*out_value)->key;
+        *out_value = offset(*out_value, sizeof(map_NodeHead));
+    }
 }
 
 static inline uint16_t map_hash(uint32_t key)

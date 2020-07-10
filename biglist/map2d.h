@@ -37,6 +37,17 @@ static inline void map2d_remove(map2d_Map *map,
 static inline void map2d_remove_value(map2d_Map *map,
                                       void *value);
 
+static inline void map2d_slow_iter_head(map2d_Map *map,
+                                        void **out_value,
+                                        uint32_t *out_key_x,
+                                        uint32_t *out_key_y);
+
+static inline void map2d_slow_iter_next(map2d_Map *map,
+                                        void *value,
+                                        void **out_value,
+                                        uint32_t *out_key_x,
+                                        uint32_t *out_key_y);
+
 static inline uint16_t map2d_hash(uint32_t key_x,
                                   uint32_t key_y);
 
@@ -109,6 +120,43 @@ static inline void map2d_remove_value(map2d_Map *map,
     if (node->last) node->last->next = node->next;
     if (node->next) node->next->last = node->last;
     free(node);
+}
+
+static inline void map2d_slow_iter_head(map2d_Map *map,
+                                        void **out_value,
+                                        uint32_t *out_key_x,
+                                        uint32_t *out_key_y)
+{
+    *out_value = NULL;
+    for (int i = 0; i < (uint16_t)~0 + 1 && !*out_value; ++i)
+        *out_value = map->tail_nodes[i];
+
+    if (*out_value) {
+        *out_key_x = ((map2d_NodeHead *)*out_value)->key_x;
+        *out_key_y = ((map2d_NodeHead *)*out_value)->key_y;
+        *out_value = offset(*out_value, sizeof(map2d_NodeHead));
+    }
+}
+
+static inline void map2d_slow_iter_next(map2d_Map *map,
+                                        void *value,
+                                        void **out_value,
+                                        uint32_t *out_key_x,
+                                        uint32_t *out_key_y)
+{
+    map2d_NodeHead *node = offset(value, -sizeof(map2d_NodeHead));
+    uint16_t hash = map2d_hash(node->key_x, node->key_y);
+
+    *out_value = node->last;
+    if (!*out_value)
+        for (int i = hash + 1; i < (uint16_t)~0 + 1 && !*out_value; ++i)
+            *out_value = map->tail_nodes[i];
+
+    if (*out_value) {
+        *out_key_x = ((map2d_NodeHead *)*out_value)->key_x;
+        *out_key_y = ((map2d_NodeHead *)*out_value)->key_y;
+        *out_value = offset(*out_value, sizeof(map2d_NodeHead));
+    }
 }
 
 static inline uint16_t map2d_hash(uint32_t key_x,
