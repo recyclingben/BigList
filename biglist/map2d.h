@@ -14,7 +14,7 @@ struct map2d_NodeHead {
 
 typedef struct {
     int content_sizeof;
-    map2d_NodeHead *tail_nodes[(uint16_t)~0];
+    map2d_NodeHead *tail_nodes[(uint16_t)~0 + 1];
 } map2d_Map;
 
 static inline void map2d_make(int content_sizeof,

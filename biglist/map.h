@@ -13,7 +13,7 @@ struct map_NodeHead {
 
 typedef struct {
     int content_sizeof;
-    map_NodeHead *tail_nodes[(uint16_t)~0];
+    map_NodeHead *tail_nodes[(uint16_t)~0 + 1];
 } map_Map;
 
 static inline void map_make(int content_sizeof,
