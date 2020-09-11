@@ -46,8 +46,7 @@ static inline void fluid_list_make(int content_sizeof,
     (*out_list)->content_sizeof = content_sizeof;
 
     fluid_list_EntryHead **head;
-    floor_stack_make(sizeof(fluid_list_EntryHead *),
-                     &(*out_list)->add_stack, (void **)&head);
+    floor_stack_make(sizeof(fluid_list_EntryHead *), &(*out_list)->add_stack, (void **)&head);
     *head = offset(*out_list, sizeof(fluid_list_ListHead));
     (*head)->live        = true;
     (*head)->pre_content = NULL;
@@ -113,4 +112,10 @@ static inline void fluid_list_clear(fluid_list_ListHead *list)
 {
     memset(offset(list, sizeof(fluid_list_ListHead)), 0, list->capacity 
         * (sizeof(fluid_list_EntryHead) + list->content_sizeof));
+    
+    fluid_list_EntryHead **head;
+    floor_stack_clear(list->add_stack, (void **)&head);
+    *head = offset(list, sizeof(fluid_list_ListHead));
+    (*head)->live        = true;
+    (*head)->pre_content = NULL;
 }
