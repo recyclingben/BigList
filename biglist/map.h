@@ -115,6 +115,8 @@ static inline void map_slow_clear(Map *map)
          * frees node, and map_slow_iter_next() needs node->last and node->key. */
         map_remove(map, key_last);
     }
+
+    map_remove(map, key_curr);
 }
 
 static inline void map_slow_iter_head(Map *map,

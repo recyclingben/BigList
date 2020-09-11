@@ -127,6 +127,8 @@ static inline void map2d_slow_clear(Map2D *map)
         /* See map_slow_clear() for why we remove after getting the next. */
         map2d_remove(map, key_x_last, key_y_last);
     }
+
+    map2d_remove(map, key_x_curr, key_y_curr);
 }
 
 static inline void map2d_slow_iter_head(Map2D *map,
