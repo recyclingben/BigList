@@ -9,83 +9,83 @@
 typedef struct {
     bool live;
     void *pre_content;
-} fluid_list_EntryHead;
+} FluidListEntry;
 
 typedef struct {
     int capacity;
     int content_sizeof;
-    floor_stack_Stack *add_stack;
-} fluid_list_ListHead;
+    FloorStack *add_stack;
+} FluidList;
 
 static inline void fluid_list_make(int content_sizeof,
                                    int capacity,
-                                   fluid_list_ListHead **out_list);
+                                   FluidList **out_list);
 
-static inline void fluid_list_head(fluid_list_ListHead *list,
+static inline void fluid_list_head(FluidList *list,
                                    void **out_content);
 
-static inline void fluid_list_next(fluid_list_ListHead *list,
+static inline void fluid_list_next(FluidList *list,
                                    void *content,
                                    void **out_content);
 
-static inline void fluid_list_add(fluid_list_ListHead *list,
+static inline void fluid_list_add(FluidList *list,
                                   void **out_content);
 
-static inline void fluid_list_remove(fluid_list_ListHead *list,
+static inline void fluid_list_remove(FluidList *list,
                                      void *content);
 
-static inline void fluid_list_clear(fluid_list_ListHead *list);
+static inline void fluid_list_clear(FluidList *list);
 
 static inline void fluid_list_make(int content_sizeof,
                                    int capacity,
-                                   fluid_list_ListHead **out_list)
+                                   FluidList **out_list)
 {
-    *out_list = calloc(1, sizeof(fluid_list_ListHead)
-        + capacity * (sizeof(fluid_list_EntryHead) + content_sizeof));
+    *out_list = calloc(1, sizeof(FluidList)
+        + capacity * (sizeof(FluidListEntry) + content_sizeof));
     (*out_list)->capacity       = capacity;
     (*out_list)->content_sizeof = content_sizeof;
 
-    fluid_list_EntryHead **head;
-    floor_stack_make(sizeof(fluid_list_EntryHead *), &(*out_list)->add_stack, (void **)&head);
-    *head = offset(*out_list, sizeof(fluid_list_ListHead));
+    FluidListEntry **head;
+    floor_stack_make(sizeof(FluidListEntry *), &(*out_list)->add_stack, (void **)&head);
+    *head = offset(*out_list, sizeof(FluidList));
     (*head)->live        = true;
     (*head)->pre_content = NULL;
 }
 
-static inline void fluid_list_head(fluid_list_ListHead *list,
+static inline void fluid_list_head(FluidList *list,
                                    void **out_content)
 {
-    fluid_list_EntryHead *entry = offset(list, sizeof(fluid_list_ListHead));
+    FluidListEntry *entry = offset(list, sizeof(FluidList));
     while (!entry->live)
-        entry = offset(entry, sizeof(fluid_list_EntryHead) + list->content_sizeof);
+        entry = offset(entry, sizeof(FluidListEntry) + list->content_sizeof);
     *out_content = entry->pre_content;
 }
 
-static inline void fluid_list_next(fluid_list_ListHead *list,
+static inline void fluid_list_next(FluidList *list,
                                    void *content,
                                    void **out_content)
 {
-    fluid_list_EntryHead *entry = offset(content, list->content_sizeof);
+    FluidListEntry *entry = offset(content, list->content_sizeof);
     while (!entry->live)
-        entry = offset(entry, sizeof(fluid_list_EntryHead) + list->content_sizeof);
+        entry = offset(entry, sizeof(FluidListEntry) + list->content_sizeof);
     *out_content = entry->pre_content;
 }
 
-static inline void fluid_list_add(fluid_list_ListHead *list,
+static inline void fluid_list_add(FluidList *list,
                                   void **out_content)
 {
-    fluid_list_EntryHead **entry;
+    FluidListEntry **entry;
     floor_stack_peak(list->add_stack, (void **)&entry);
 
     (*entry)->live        = true;
-    (*entry)->pre_content = offset(*entry, sizeof(fluid_list_EntryHead));
-    *out_content = offset(*entry, sizeof(fluid_list_EntryHead));
+    (*entry)->pre_content = offset(*entry, sizeof(FluidListEntry));
+    *out_content = offset(*entry, sizeof(FluidListEntry));
 
     /* We increment here because, in case we are currently at the floor,
      * the next available space would be the following entry. Otherwise,
      * the pop would revert this change, and we've saved ourselves a
      * possible branch. */
-    *entry = offset(*entry, sizeof(fluid_list_EntryHead) + list->content_sizeof);
+    *entry = offset(*entry, sizeof(FluidListEntry) + list->content_sizeof);
     floor_stack_pop_maybe(list->add_stack);
 
     floor_stack_peak_floor(list->add_stack, (void **)&entry);
@@ -93,13 +93,13 @@ static inline void fluid_list_add(fluid_list_ListHead *list,
     (*entry)->pre_content = NULL;
 }
 
-static inline void fluid_list_remove(fluid_list_ListHead *list,
+static inline void fluid_list_remove(FluidList *list,
                                      void *content)
 {
-    fluid_list_EntryHead **entry;
+    FluidListEntry **entry;
 
     floor_stack_push(list->add_stack, (void **)&entry);
-    *entry = offset(content, -sizeof(fluid_list_EntryHead));
+    *entry = offset(content, -sizeof(FluidListEntry));
     (*entry)->live        = false;
     (*entry)->pre_content = NULL;
 
@@ -108,14 +108,14 @@ static inline void fluid_list_remove(fluid_list_ListHead *list,
     (*entry)->pre_content = NULL;
 }
 
-static inline void fluid_list_clear(fluid_list_ListHead *list)
+static inline void fluid_list_clear(FluidList *list)
 {
-    memset(offset(list, sizeof(fluid_list_ListHead)), 0, list->capacity 
-        * (sizeof(fluid_list_EntryHead) + list->content_sizeof));
+    memset(offset(list, sizeof(FluidList)), 0, list->capacity 
+        * (sizeof(FluidListEntry) + list->content_sizeof));
     
-    fluid_list_EntryHead **head;
+    FluidListEntry **head;
     floor_stack_clear(list->add_stack, (void **)&head);
-    *head = offset(list, sizeof(fluid_list_ListHead));
+    *head = offset(list, sizeof(FluidList));
     (*head)->live        = true;
     (*head)->pre_content = NULL;
 }

@@ -3,9 +3,9 @@
 #include "map.h"
 #include "map2d.h"
 
-typedef fluid_list_ListHead table_Table;
-typedef map_Map             index_Index;
-typedef map2d_Map           index_Index2D;
+typedef FluidList Table;
+typedef Map       Index;
+typedef Map2D     Index2D;
 
 #define table_make(content_sizeof, capacity, out_table) fluid_list_make(content_sizeof, capacity, out_table)
 #define table_head(table, out_content)                  fluid_list_head(table, (void **)(out_content))
