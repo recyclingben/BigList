@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #define offset(of, by) ((void *)((char *)(of) + (int)(by)))
 
 typedef struct {
@@ -24,7 +25,8 @@ static inline void floor_stack_peak_floor(floor_stack_Stack *stack,
 
 static inline bool floor_stack_pop_maybe(floor_stack_Stack *stack);
 
-static inline void floor_stack_clear(floor_stack_Stack *stack);
+static inline void floor_stack_clear(floor_stack_Stack *stack,
+                                     void **out_floor);
 
 
 static inline void floor_stack_make(int content_sizeof,
@@ -65,8 +67,9 @@ static inline bool floor_stack_pop_maybe(floor_stack_Stack *stack)
     return dec;
 }
 
-static inline void floor_stack_clear(floor_stack_Stack *stack)
+static inline void floor_stack_clear(floor_stack_Stack *stack,
+                                     void **out_floor)
 {
-    while (floor_stack_pop_maybe(stack))
-        ;
+    stack->depth_track = 0;
+    floor_stack_peak_floor(stack, out_floor);
 }
