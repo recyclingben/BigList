@@ -118,7 +118,7 @@ static inline void map2d_slow_clear(map2d_Map *map)
     uint32_t key_y_curr;
     uint32_t key_x_last;
     uint32_t key_y_last;
-    map2d_slow_iter_head(map, &value, &key_x_curr, key_y_curr);
+    map2d_slow_iter_head(map, &value, &key_x_curr, &key_y_curr);
     while (value) {
         key_x_last = key_x_curr;
         key_y_last = key_y_curr;
