@@ -30,6 +30,7 @@ static inline void map_add(map_Map *map,
 static inline void map_remove(map_Map *map,
                               uint32_t key);
 
+static inline void map_slow_clear(map_Map *map);
 
 static inline void map_slow_iter_head(map_Map *map,
                                       void **out_value,
@@ -100,6 +101,21 @@ static inline void map_remove(map_Map *map,
     }
 }
 
+static inline void map_slow_clear(map_Map *map)
+{
+    void *value;
+    uint32_t key_curr;
+    uint32_t key_last;
+    map_slow_iter_head(map, &value, &key_curr);
+    while (value) {
+        key_last = key_curr;
+        map_slow_iter_next(map, value, &value, &key_curr);
+
+        /* We must remove after map_slow_iter_next() because map_remove() necessarily 
+         * frees node, and map_slow_iter_next() needs node->last and node->key. */
+        map_remove(map, key_last);
+    }
+}
 
 static inline void map_slow_iter_head(map_Map *map,
                                       void **out_value,

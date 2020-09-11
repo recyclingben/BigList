@@ -39,6 +39,8 @@ static inline void map2d_slow_iter_head(map2d_Map *map,
                                         uint32_t *out_key_x,
                                         uint32_t *out_key_y);
 
+static inline void map2d_slow_clear(map2d_Map *map);
+
 static inline void map2d_slow_iter_next(map2d_Map *map,
                                         void *value,
                                         void **out_value,
@@ -109,6 +111,23 @@ static inline void map2d_remove(map2d_Map *map,
     }
 }
 
+static inline void map2d_slow_clear(map2d_Map *map)
+{
+    void *value;
+    uint32_t key_x_curr;
+    uint32_t key_y_curr;
+    uint32_t key_x_last;
+    uint32_t key_y_last;
+    map2d_slow_iter_head(map, &value, &key_x_curr, key_y_curr);
+    while (value) {
+        key_x_last = key_x_curr;
+        key_y_last = key_y_curr;
+        map2d_slow_iter_next(map, value, &value, &key_x_curr, &key_y_curr);
+
+        /* See map_slow_clear() for why we remove after getting the next. */
+        map2d_remove(map, key_x_last, key_y_last);
+    }
+}
 
 static inline void map2d_slow_iter_head(map2d_Map *map,
                                         void **out_value,

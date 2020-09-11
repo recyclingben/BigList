@@ -37,6 +37,7 @@ static inline void floor_stack_peak_floor(floor_stack_Stack *stack,
 
 static inline bool floor_stack_pop_maybe(floor_stack_Stack *stack);
 
+static inline void floor_stack_clear(floor_stack_Stack *stack);
 
 
 static inline void floor_stack_make(int content_sizeof,
@@ -88,4 +89,10 @@ static inline bool floor_stack_pop_maybe(floor_stack_Stack *stack)
 
     new_lo = *depth_track_lo_16(&stack->depth_track);
     return old_lo != new_lo;
+}
+
+static inline void floor_stack_clear(floor_stack_Stack *stack)
+{
+    while (floor_stack_pop_maybe(stack))
+        ;
 }

@@ -11,6 +11,7 @@ typedef struct {
 } fluid_list_EntryHead;
 
 typedef struct {
+    int capacity;
     int content_sizeof;
     floor_stack_Stack *add_stack;
 } fluid_list_ListHead;
@@ -32,12 +33,15 @@ static inline void fluid_list_add(fluid_list_ListHead *list,
 static inline void fluid_list_remove(fluid_list_ListHead *list,
                                      void *content);
 
+static inline void fluid_list_clear(fluid_list_ListHead *list);
+
 static inline void fluid_list_make(int content_sizeof,
                                    int capacity,
                                    fluid_list_ListHead **out_list)
 {
     *out_list = calloc(1, sizeof(fluid_list_ListHead)
         + capacity * (sizeof(fluid_list_EntryHead) + content_sizeof));
+    (*out_list)->capacity       = capacity;
     (*out_list)->content_sizeof = content_sizeof;
 
     fluid_list_EntryHead **head;
@@ -102,4 +106,10 @@ static inline void fluid_list_remove(fluid_list_ListHead *list,
     floor_stack_peak_floor(list->add_stack, (void **)&entry);
     (*entry)->live        = true;
     (*entry)->pre_content = NULL;
+}
+
+static inline void fluid_list_clear(fluid_list_ListHead *list)
+{
+    memset(offset(list, sizeof(fluid_list_ListHead)), 0, list->capacity 
+        * (sizeof(fluid_list_EntryHead) + list->content_sizeof));
 }
