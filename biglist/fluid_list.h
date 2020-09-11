@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <string.h>
 #include "floor_stack.h"
 #define offset(of, by) ((void *)((char *)(of) + (int)(by)))
 
