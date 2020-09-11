@@ -73,7 +73,7 @@ static inline void map_add(map_Map *map,
     int hash = map_hash(key);
     map_NodeHead *tail = map->tail_nodes[hash];
 
-    map->tail_nodes[hash] = malloc(sizeof(map_NodeHead) + map->content_sizeof);
+    map->tail_nodes[hash] = calloc(1, sizeof(map_NodeHead) + map->content_sizeof);
     map->tail_nodes[hash]->key  = key;
     map->tail_nodes[hash]->last = tail;
 
