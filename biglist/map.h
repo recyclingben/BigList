@@ -87,13 +87,12 @@ static inline void map_remove(map_Map *map,
                               uint32_t key)
 {
     map_NodeHead *node = map->tail_nodes[map_hash(key)];
+    map->tail_nodes[map_hash(key)] = NULL;
 
     while (node) {
         if (node->key == key) {
-            if (node->last)
-                              node->last->next = node->next;
-            if (node->next)
-                              node->next->last = node->last;
+            if (node->last) node->last->next = node->next;
+            if (node->next) node->next->last = node->last;
             free(node);
 
             return;
@@ -139,8 +138,8 @@ static inline void map_slow_iter_next(map_Map *map,
 
     *out_value = node->last;
     if (!*out_value)
-        for (int i = hash + 1; i < (uint16_t)~0 + 1 && !*out_value; ++i)
-    *out_value = map->tail_nodes[i];
+        for (int i = hash + 1; i <= (uint16_t)~0 && !*out_value; ++i)
+            *out_value = map->tail_nodes[i];
 
     if (*out_value) {
         *out_key   = ((map_NodeHead *)*out_value)->key;
