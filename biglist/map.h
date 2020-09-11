@@ -30,8 +30,6 @@ static inline void map_add(map_Map *map,
 static inline void map_remove(map_Map *map,
                               uint32_t key);
 
-static inline void map_remove_value(map_Map *map,
-                                    void *value);
 
 static inline void map_slow_iter_head(map_Map *map,
                                       void **out_value,
@@ -102,17 +100,6 @@ static inline void map_remove(map_Map *map,
     }
 }
 
-static inline void map_remove_value(map_Map *map,
-                                    void *value)
-{
-    map_NodeHead *node = offset(value, -sizeof(map_NodeHead));
-
-    if (node->last)
-        node->last->next = node->next;
-    if (node->next)
-        node->next->last = node->last;
-    free(node);
-}
 
 static inline void map_slow_iter_head(map_Map *map,
                                       void **out_value,

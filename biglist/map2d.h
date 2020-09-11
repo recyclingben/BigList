@@ -34,9 +34,6 @@ static inline void map2d_remove(map2d_Map *map,
                                 uint32_t key_x,
                                 uint32_t key_y);
 
-static inline void map2d_remove_value(map2d_Map *map,
-                                      void *value);
-
 static inline void map2d_slow_iter_head(map2d_Map *map,
                                         void **out_value,
                                         uint32_t *out_key_x,
@@ -112,15 +109,6 @@ static inline void map2d_remove(map2d_Map *map,
     }
 }
 
-static inline void map2d_remove_value(map2d_Map *map,
-                                      void *value)
-{
-    map2d_NodeHead *node = offset(value, -sizeof(map2d_NodeHead));
-
-    if (node->last) node->last->next = node->next;
-    if (node->next) node->next->last = node->last;
-    free(node);
-}
 
 static inline void map2d_slow_iter_head(map2d_Map *map,
                                         void **out_value,
