@@ -35,7 +35,8 @@ static inline void floor_stack_peak(floor_stack_Stack *stack,
 static inline void floor_stack_peak_floor(floor_stack_Stack *stack,
                                           void **out_content);
 
-static inline void floor_stack_pop_maybe(floor_stack_Stack *stack);
+static inline bool floor_stack_pop_maybe(floor_stack_Stack *stack);
+
 
 
 static inline void floor_stack_make(int content_sizeof,
@@ -73,12 +74,18 @@ static inline void floor_stack_peak_floor(floor_stack_Stack *stack,
     *out_content = offset(stack, sizeof(floor_stack_Stack));
 }
 
-static inline void floor_stack_pop_maybe(floor_stack_Stack *stack)
+static inline bool floor_stack_pop_maybe(floor_stack_Stack *stack)
 {
+    bool old_lo = *depth_track_lo_16(&stack->depth_track);
+    bool new_lo;
+
     /* Trick to decrement 16 bit integer, unless it would underflow. */
     /* Relies on higher 16 bits being == 1. */
     --stack->depth_track.int_32;
     *depth_track_lo_16(&stack->depth_track) -= *depth_track_hi_16(&stack->depth_track);
     *depth_track_lo_16(&stack->depth_track) += 1;
     *depth_track_hi_16(&stack->depth_track) = 1;
+
+    new_lo = *depth_track_lo_16(&stack->depth_track);
+    return old_lo != new_lo;
 }
